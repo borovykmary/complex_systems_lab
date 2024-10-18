@@ -88,7 +88,11 @@ def plot_graph(book_paths, scale):
     plt.show()
 
 book_paths = ['project1/Middlemarch.txt', 'project1/The-Adventures-of-Roderick-Random.txt', 'project1/The-Castle-of-Otranto.txt','project1/Ulysses.txt']
+""" for book_path in book_paths:
+    ranks, dictionary, total = count_ranks(book_path)
+    save_analysis_to_file(book_path, ranks, dictionary, total)"""
+
 plot_graph(book_paths, scale='log-log')
 plot_graph(book_paths, scale='linear')
-#save_analysis_to_file(book_paths[0], *count_ranks(book_paths[0]))
+
 
