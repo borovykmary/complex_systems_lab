@@ -10,7 +10,6 @@ def tokenize_text(file_path):
         tokenized_text = word_tokenize(clear_data)
     return tokenized_text
 
-
 def count_frequencies(book_path):  # returns a dictionary with words as keys and their frequencies as values
     tokenized_text = tokenize_text(book_path)
     total = sum(1 for word in tokenized_text)
@@ -42,11 +41,11 @@ def save_analysis_to_file(book_path, ranks, dictionary, total, output_dir='outpu
             frequency = count / total
             file.write(f"{rank}\t{word}\t{count}\t{frequency:.6f}\n")
 
-def plot_graph(book_path):  # plots the rank-frequency graph for the given book
-
+def plot_graph(book_paths, scale):
     plt.figure(figsize=(12, 6))
     plt.style.use('seaborn-v0_8-deep')
     colors = ['r', 'g', 'b', 'm']
+
     for i, book_path in enumerate(book_paths):
         frequencies, dictionary, total = count_frequencies(book_path)
         ranks, _, _ = count_ranks(book_path)
@@ -58,24 +57,38 @@ def plot_graph(book_path):  # plots the rank-frequency graph for the given book
         rank_values = [rank for word, rank in sorted_ranks]
 
         book_title = os.path.basename(book_path).replace('.txt', '')
-        plt.loglog(rank_values, freq_values, marker='o', markersize=1, linestyle='-', color=colors[i % len(colors)],
-                   label=f'Rank-Frequency for {book_title}')
 
-        save_analysis_to_file(book_path, ranks, dictionary, total)
+        if scale == 'log-log':
+            plt.loglog(rank_values, freq_values, marker='o', markersize=1, linestyle='-', color=colors[i % len(colors)],
+                       label=f'Empirical for {book_title}')
+            C = freq_values[0]  # constant for Zipf's Law
+            zipf_values = [C / (rank) for rank in rank_values]
+            plt.loglog(rank_values, zipf_values, linestyle='--', color=colors[i % len(colors)],
+                       label=f'Theoretical Zipf for {book_title}')
+        elif scale == 'linear':
+            plt.plot(rank_values, freq_values, marker='o', markersize=1, linestyle='-', color=colors[i % len(colors)],
+                     label=f'Empirical for {book_title}')
+            C = freq_values[0]
+            zipf_values = [C / (rank) for rank in rank_values]
+            plt.plot(rank_values, zipf_values, linestyle='--', color=colors[i % len(colors)],
+                     label=f'Theoretical Zipf for {book_title}')
 
-    plt.loglog(rank_values, freq_values, marker='o', markersize=1, linestyle='-', color='r', label='Rank-Frequency')
-    plt.ylim(0.000001, 0.1)
+    if scale == 'log-log':
+        plt.ylim(0.000001, 0.1)
+    elif scale == 'linear':
+        plt.ylim(0, 0.05)
+        plt.xlim(0, 5000)
+
     plt.xlabel('Rank', fontsize=14)
     plt.ylabel('Frequency', fontsize=14)
-    plt.title('Rank-Frequency Plot for All 4 Books', fontsize=16)
+    plt.title(f'Rank-Frequency Plot with Zipf\'s Law ({scale.capitalize()} Scale)', fontsize=16)
     plt.legend(loc='best', fontsize=12)
     plt.grid(True, which='both', linestyle='--', linewidth=0.5)
     plt.tight_layout()
-
     plt.show()
 
 book_paths = ['project1/Middlemarch.txt', 'project1/The-Adventures-of-Roderick-Random.txt', 'project1/The-Castle-of-Otranto.txt','project1/Ulysses.txt']
-plot_graph(book_paths)
+plot_graph(book_paths, scale='log-log')
+plot_graph(book_paths, scale='linear')
+#save_analysis_to_file(book_paths[0], *count_ranks(book_paths[0]))
 
-
-#print(count_frequencies(book_path))
