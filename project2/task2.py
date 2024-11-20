@@ -47,7 +47,12 @@ def midpoint_method(f, x0, y0, t_max, h):
     return t_values[:len(x_values)], x_values, y_values
 
 # Initial conditions
-initial_conditions = [(0.5, 0), (0.2, 0.5), (0.3, 0.1), (0.1, 0.3)]
+initial_conditions = [
+    (0.5, 0), (0.2, 0.5), (0.3, 0.1), (0.1, 0.3),
+    (0.4, 0.2), (0.6, 0.1), (0.1, 0.6), (0.7, 0.3),
+    (0.3, 0.4), (0.2, 0.2), (0.5, 0.5), (0.6, 0.6),
+    (0.7, 0.7), (0.8, 0.8), (0.9, 0.9), (1.0, 1.0)
+]
 
 # Parameters
 t_max = 10
